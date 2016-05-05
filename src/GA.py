@@ -52,7 +52,7 @@ def selection(x): #输入1 x UnitLength行向量
                                 while x[j] < temp:
                                                 j += 1
                                 y[i] = j
-                return y #输出1x 2行向量
+                return y #输出1 x 2行向量
 
 def mutation(x): #输入1 x UnitLength行向量
                 global pmutation
@@ -63,7 +63,7 @@ def mutation(x): #输入1 x UnitLength行向量
                                 temp2 = randrange(UnitLength)
                                 temp2 = int(temp2)
                                 y[temp2] = fabs(x[temp2] - 1)
-                return y #输出1xUnitLength行向量
+                return y #输出1 x UnitLength行向量
 
 def IfCroIfMut(x): #输入1 x 1纯小数
                 temp1 = [0 for col in range(10000)]
