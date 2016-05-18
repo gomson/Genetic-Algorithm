@@ -1,0 +1,158 @@
+\documentclass[12pt]{article}
+\usepackage[hmargin=2cm,vmargin=2cm]{geometry}
+\usepackage{ntheorem,picinpar}
+\usepackage{ctexcap}
+\usepackage{fontspec,multirow}
+% \setmainfont{Adobe Caslon Pro}
+\usepackage{amsmath,bm}
+\usepackage{amsfonts}
+\usepackage{xcolor,tabularx,booktabs}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{subfigure}
+\usepackage{paralist,float}
+\usepackage[section]{placeins}
+\pagestyle{fancy}
+\usepackage[bf,md,up,raggedright]{titlesec}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\hypersetup{colorlinks,breaklinks, urlcolor=blue, linkcolor=magenta,citecolor=blue}
+\makeatletter
+\newcommand{\rmnum}[1]{\romannumeral #1}
+\newcommand{\Rmnum}[1]{\expandafter\@slowromancap\romannumeral #1@}                                   
+\makeatother
+\usepackage{titlesec}
+\usepackage{tabularx}
+\titleformat{\section}{\scshape\Large\raggedright}{\Rmnum{\thesection}.}{1ex}{}
+\hypersetup{colorlinks,breaklinks, urlcolor=blue, linkcolor=black,citecolor=blue}
+\title{遗传算法的~\textsc{Python}~实现\\
+Genetic Algorithm in \textsc{Python}}
+\author{\kaishu{}杨元辉\quad 学号：5090209074\thanks{杨元辉，学号5090209074，上海交通大学，机械与动力工程学院，机械电子工程}\\
+\textsc{Yuanhui Yang}\quad Student ID: 5090209074}
+\date{\kaishu{}上海交通大学\\\textsc{Shanghai Jiaotong University}}
+\begin{document}
+\lfoot{\kaishu 上海交通大学~SJTU}
+\cfoot{}
+\rfoot{\thepage}
+\maketitle
+\thispagestyle{fancy}
+\section{遗传算法简介}
+遗传算法是一门边缘交叉学科，是生物、数学、计算机理论等多个领域的完美结合，是生物进化淘汰在二进制计算机领域的出色实现。
+\subsection{生物学基础}
+生物世界充满了淘汰、竞争、突变等进化活动。以自然选择学说为核心的现代生物进化理论，其基本观点是：
+\begin{itemize}
+\item 种群是生物进化的基本单位，
+\item 生物进化的实质是种群基因频率的改变，
+\item 具体实现是：
+\begin{itemize}
+\item 基因突变：产生生物进化的原材料I；
+\item 基因重组：产生生物进化的原材料II；
+\item 自然选择：使种群的基因频率定向改变并决定生物进化的方向；
+\item 生殖隔离：新物种形成的必要条件。
+\end{itemize}
+\end{itemize}\par
+相应地，在计算机领域，上述过程的计算机实现，就是遗传算法的具体实现。
+\section{计算机实现}
+\subsection{编码}
+遗传算法的编码规则有二进制编码与浮点数编码两种，在下面的算例中使用的是二进制编码。这样操作的优势是：二进制编码及符合计算机处理信息的原理，也方便对染色体进行遗传、编译和突变等操作，因为二进制数组相对应十进制数组更容易实现简并。
+\begin{equation}
+\delta =  \dfrac{U - L}{2^k - 1}
+\end{equation}
+\subsection{解码}
+将二进制数组转变为十进制数组的过程就称为解码过程。
+\begin{equation}
+x = L + \left(\sum\limits_{i = 1}^{k}{b_k 2^{i-1}}\right)\cdot \dfrac{U-L}{2^k - 1} 
+\end{equation}
+\subsection{交配}
+\begin{enumerate}
+\item 产生一个0,1之间的随机数，若该数小于0.1(交配概率)，则进行以下操作；
+\item 用随机数(整数)产生一个交配位点；
+\item 将两个二进制数组在以上交配位点之后的所有值互换。
+\end{enumerate}
+\subsection{突变}
+\begin{enumerate}
+\item 产生一个0,1之间的随机数，若该数小于0.4(突变概率)，则进行以下操作；
+\item 用随机数(整数)产生一个突变位点；
+\item 将二进制数组上的突变位点0,1互换，具体实现是：
+\begin{equation}
+value = abs\left(value-1\right)
+\end{equation}
+\end{enumerate}
+\subsection{自然选择}
+模拟自然选择法则的过程，我们使用轮盘选择法，即以高概率选中结果更加出色的解，作为下一轮计算的样本。
+\begin{enumerate}
+\item 解码；
+\item 计算对应的目标函数值；
+\item 将以上函数值归一化到$\left(0,1\right)$区间，同时加和为1，即频率；
+\item 计算以上归一化结果的积累频率；
+\item 产生一个$\left(0,1\right)$之间的随机数，将该结果对应的二进制数组提出，这就是我们选出来的相对最优解；
+\item 将该结果代入下一轮循环，如此下去，结果相对佳的解便在解集中扩散开去，结果不佳的解会被慢慢地被淘汰。
+\end{enumerate}\par
+以上过程是随机的，充满概率的，按照解出色的程度进行概率抽取，也给其他并不是最出色的解机会，这样做是为了防止陷入局部最优解。
+\section{算例}
+\begin{equation}\label{eqn:dec}
+\begin{array}{l}
+\min \left\{ {\exp \times \left( x \right)\left( {4{x^2} + 2{y^2} + 4xy + 2y + 1} \right)} \right\}\\
+\mathrm{subject~to:}\left\{ \begin{array}{l}
+1.5 + xy - x - y \le 0\\
+ - xy \le 10
+\end{array} \right.
+\end{array}
+\end{equation}
+\subsection{具体实现}
+\subsubsection{预处理}
+遗传算法之中有使用概率，概率非负。因此，需要做变换：
+\begin{equation}\left\{
+\begin{array}{l}
+z  \gets z + \mathrm{Intial~Value}\\
+z>0
+\end{array}\right.
+\end{equation}\par
+遗传算法是求取全局最大值的，而式~\eqref{eqn:dec}~是求取最小值的。因此，需要做变换：
+\begin{equation}
+z\gets \dfrac{1}{z}
+\end{equation}
+\subsubsection{边界处理}
+非常明显，经过预处理之后，以上问题的对应的函数值一定大于0，因此，我们只需要将超过边界部分的解对应的函数值强行设定成0。这样的话，在“自然选择”这步，0就会被屏蔽掉，对应的解便会被淘汰掉。
+\begin{equation}
+\mathrm{When:}\left\{
+\begin{array}{l}
+1.5 + xy - x - y > 0\\
+ - xy > 10
+ \end{array}\right.
+ \quad \mathrm{then:}
+ z\gets 0
+\end{equation}
+\subsubsection{实验结果}
+经过500次训练之后，我们得到该NP问题可接受的全局最优解，即最后一个训练结果\texttt{VarMax[-1]}：
+\begin{equation}
+\left[x,y,f\left(x,y\right)\right]= \left[-6.3045 , 1.5527 ,0.2353 \right]
+\end{equation}\par
+另一方面，我们对上述解作边界检测，看一看是否满足边界条件：
+\begin{table}[H]
+\centering
+\caption{边界检测}
+\begin{tabular}{lcr}
+\toprule
+计算项目&$1.5+xy - x - y \le 0$&$-xy\le 10$
+\\\midrule
+计算结果&-3.5377 &  9.7895\\
+满足与否&是&是
+\\\bottomrule
+\end{tabular}
+\end{table}
+% \par
+% 使用~\textsc{Matlab}~作图，我们能够看到程序输出的平均值与最大值的变化趋势是越来越接近，这说明训练样本在“进化”。
+% \begin{figure}[H]
+% \centering
+% \includegraphics[width=\textwidth]{fig01.eps}
+% \caption{平均值与最大值}
+% \end{figure}
+% \section{总结}
+% 经过遗传算法的求解，我们成功地解决了该非线性回归问题，具体的结果满足边界调节，求解的结果也可以接受。\par
+% 足以见到，遗传算法的结果是一种可以信赖的算法，它基于对之前求解过程的学习。相比穷举算法，遗传算法在解决NP问题时有着独特的优势。
+% \section{鸣谢}
+% 最后，感谢陆老师在程序尾声为我提供的帮助，老师面向对象以及解决问题的视角对产生了积极的影响。在老师的ftp中我看到了数据库等资料，这是我进一步学习的重要参考。\par
+% 之后我即将从机械行业转到计算机科学，我选择北京微软亚洲研究院作为我职业生涯的起点，希望有朝一日能够成为一位出色的计算机科学家。由衷地感谢老师。\par
+% 全文使用~\LaTeX~编译完成，一方面说明我对cs的浓厚兴趣，一方面也说明我的职业或学术选择。
+\end{document}
