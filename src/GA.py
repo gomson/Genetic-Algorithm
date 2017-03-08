@@ -1,6 +1,6 @@
 # @Auther="Yuanhui Yang"
 # @Email="YuanhuiYang2015@u.northwestern.edu"
-# Remove all Chinese comments
+# MSUT Remove all Chinese comments
 
 from math import log, ceil, pow, exp, fabs
 from random import random, randint, randrange
